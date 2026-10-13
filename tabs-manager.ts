@@ -747,7 +747,10 @@ export class TabsManager extends Events {
     return this.state.spaces.find((s) => s.id === this.activeSpaceId) ?? this.state.spaces[0];
   }
 
-  /** Show another space. With `focus`, its last used tab comes to the front (or a fresh one, if it has none). */
+  /**
+   * Show another space. With `focus`, its last used tab comes to the front (or a fresh one, if it has none),
+   * unless Atlas is in front: there is one Atlas for every space, so it stays.
+   */
   async switchSpace(id: string, focus = true) {
     const target = this.state.spaces.find((s) => s.id === id);
     if (!target || id === this.activeSpaceId) return;
@@ -756,7 +759,12 @@ export class TabsManager extends Events {
     this.state.pinned = target.pinned;
     this.trigger("space-switched", direction);
     this.commit();
-    if (focus) await this.focusSpace(target);
+    if (focus && !this.atlasInFront()) await this.focusSpace(target);
+  }
+
+  private atlasInFront(): boolean {
+    const snap = this.sync();
+    return !!snap.active && snap.atlas.includes(snap.active);
   }
 
   /** Step through spaces; without `wrap` the first and last space are the ends (a swipe stops there). */

@@ -36,7 +36,7 @@ Like Zen's spaces: separate sets of pinned tabs, folders and open tabs, say one 
 - **Switch** with a sideways swipe on the trackpad, a mouse's horizontal scroll, the space icons at the bottom of the sidebar, or the **Switch to space 1–9** commands.
 - **Name and icon**: click the space's name at the top for its menu. Icons come from the same fantasy set Atlas VTT uses for map pins.
 - **Move tabs** by dragging them onto a space's icon (hold it there to open the space), or with **Move current tab to space…**. Opening a note that belongs to another space takes you to that space.
-- Each space remembers the tab you were on. Deleting a space keeps its open notes, as tabs of the space beside it.
+- Each space remembers the tab you were on. While Atlas is in front, switching spaces leaves it there, since every space shares it. Deleting a space keeps its open notes, as tabs of the space beside it.
 
 ### Split view
 
