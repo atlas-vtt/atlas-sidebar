@@ -1,7 +1,7 @@
 {
   "name": "atlas-sidebar",
-  "version": "2.0.0",
-  "description": "Vertical tabs for Atlas VTT: pinned tabs, folders, Essentials and spaces, an Atlas pin, and a clutter-free interface.",
+  "version": "1.0.0",
+  "description": "Vertical tabs for Atlas VTT: pinned tabs, folders, essentials and spaces, an Atlas pin, and a clutter-free interface.",
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",
