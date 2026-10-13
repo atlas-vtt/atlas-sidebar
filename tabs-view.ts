@@ -77,6 +77,8 @@ export class TabsView extends ItemView {
   private slide: 1 | -1 | 0 = 0;
   private pendingSpaceRename = false;
   private swipe = { travel: 0, locked: false, committed: false, timer: 0 };
+  /** The element the current wheel gesture is sent to; see `followWheelTarget`. */
+  private wheelTarget: EventTarget | null = null;
   private springSpace: { id: string; timer: number } | null = null;
   private essentialsEl!: HTMLElement;
   private pinnedEl!: HTMLElement;
@@ -182,7 +184,7 @@ export class TabsView extends ItemView {
     });
     this.registerDomEvent(s, "mouseover", (e) => this.onPeekOver(e));
     this.registerDomEvent(s, "mouseout", (e) => this.onPeekOut(e));
-    this.registerDomEvent(this.contentEl, "wheel", (e) => this.onWheel(e), { passive: true });
+    this.registerDomEvent(this.contentEl.win, "wheel", (e) => this.onWindowWheel(e), { capture: true, passive: true });
     for (const target of [this.switcherEl]) {
       this.registerDomEvent(target, "dragover", (e) => this.onDragOver(e));
       this.registerDomEvent(target, "dragleave", (e) => this.onDragLeave(e));
@@ -202,6 +204,7 @@ export class TabsView extends ItemView {
 
   async onClose() {
     this.peek.close(false);
+    this.followWheelTarget(null);
     cancelAnimationFrame(this.frame);
     this.frame = 0;
     this.endDrag();
@@ -427,6 +430,32 @@ export class TabsView extends ItemView {
       buttons[at + (e.key === "ArrowRight" ? 1 : -1)]?.focus();
     }
   }
+
+  /** Sideways wheel events over the sidebar, found by where the pointer is rather than by their target. */
+  private onWindowWheel(e: WheelEvent) {
+    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+    const under = this.contentEl.doc.elementFromPoint(e.clientX, e.clientY);
+    if (!under || !this.contentEl.contains(under)) return;
+    this.followWheelTarget(e.target);
+    this.onWheel(e);
+  }
+
+  /**
+   * Chromium sends every wheel event of a trackpad gesture, momentum included, to the element the gesture
+   * began on. A swipe that switches spaces removes the rows of the old space, and events sent to a removed
+   * row reach neither the sidebar nor the window, so swiping back went unheard. Listen on that element too.
+   */
+  private followWheelTarget(target: EventTarget | null) {
+    if (target === this.wheelTarget) return;
+    this.wheelTarget?.removeEventListener("wheel", this.onDetachedWheel);
+    this.wheelTarget = target;
+    target?.addEventListener("wheel", this.onDetachedWheel, { passive: true });
+  }
+
+  /** While the gesture's element is still in the document, the window's listener hears its events. */
+  private readonly onDetachedWheel = (e: Event) => {
+    if (!(e.currentTarget as Node).isConnected) this.onWheel(e as WheelEvent);
+  };
 
   /** A sideways swipe (or a mouse's horizontal wheel) switches spaces; the list follows until it lets go. */
   private onWheel(e: WheelEvent) {

@@ -275,7 +275,8 @@ body.zen-hide-root-tabs.is-hidden-frameless .mod-root .view-actions {
 }
 /* An Atlas map hides its view header, so the band its scene tabs stand in drags the window instead.
    A drag region takes the pointer from all that lies in it, whatever is drawn on top, so everything
-   Atlas shows there opts out and only the map itself gives up the band.
+   Atlas shows there opts out and only the map itself gives up the band. An opt-out covers only its
+   own box: a note preview is a fixed window inside a wrapper of no size, so the window itself opts out.
    The height is Atlas' top bar row: its 8px inset and its bar. */
 body.zen-hide-root-tabs.is-hidden-frameless:not(.is-fullscreen)
   .mod-root
@@ -295,7 +296,7 @@ body.zen-hide-root-tabs.is-hidden-frameless
   :is(
     .atlas-top-bar-row > *,
     .atlas-ui > :not(.atlas-top-bar-row, .atlas-map-loading-overlay),
-    .atlas-note-preview-layer > *
+    .atlas-note-preview-window
   ) {
   -webkit-app-region: no-drag;
 }
@@ -1319,35 +1320,25 @@ body.zen-split-previewing .drag-ghost {
   background: var(--zen-atlas-art) no-repeat 0 0 / 111px auto;
   filter: drop-shadow(0 4px 6px var(--za-ink-shadow));
   pointer-events: none;
-  transition: transform 420ms var(--zt-spring);
 }
-/* Hover: the card rises a little off the sidebar, its surface warms and the sword lifts with it. */
+/* Hover: the card stays where it is; only its surface and edge warm. */
 .zen-atlas:hover {
   --za-ring: 0 0 0 1px var(--background-modifier-border-hover);
-  --za-lift: 0 2px 4px var(--za-ink-shadow), 0 14px 28px -12px var(--za-ink-shadow);
   background-color: color-mix(in srgb, var(--background-primary), var(--text-normal) 3%);
-  transform: translateY(-1px);
 }
 .zen-atlas:hover .zen-atlas-backdrop {
   opacity: 1;
 }
-.zen-atlas:hover .zen-atlas-art {
-  transform: translateY(-3px);
-}
 .zen-atlas:hover .zen-atlas-sub {
   color: var(--text-normal);
 }
-/* Press: it settles back down, close to the sidebar, and the sword with it. */
+/* Press: it settles close to the sidebar. */
 .zen-atlas:active {
   --za-lift: 0 1px 1px var(--za-ink-shadow), 0 3px 8px -6px var(--za-ink-shadow);
   background-color: color-mix(in srgb, var(--background-primary), var(--text-normal) 6%);
-  transform: translateY(0) scale(0.98);
+  transform: scale(0.98);
   transition-duration: 90ms;
   transition-timing-function: var(--zt-ease);
-}
-.zen-atlas:active .zen-atlas-art {
-  transform: translateY(0);
-  transition-duration: 90ms;
 }
 .zen-atlas-text {
   position: absolute;
@@ -1401,13 +1392,10 @@ body.zen-split-previewing .drag-ghost {
 }
 @media (prefers-reduced-motion: reduce) {
   .zen-atlas,
-  .zen-atlas-art,
   .zen-atlas-backdrop {
     transition: none;
   }
-  .zen-atlas:hover,
-  .zen-atlas:active,
-  .zen-atlas:hover .zen-atlas-art {
+  .zen-atlas:active {
     transform: none;
   }
 }
