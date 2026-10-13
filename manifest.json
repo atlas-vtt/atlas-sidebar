@@ -1,7 +1,7 @@
 {
   "id": "atlas-sidebar",
   "name": "Atlas Sidebar",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "minAppVersion": "1.13.0",
   "description": "Vertical tabs for Atlas VTT: pinned tabs, folders, essentials and spaces, an Atlas pin, and a clutter-free interface.",
   "author": "Fabian Urbanek",
