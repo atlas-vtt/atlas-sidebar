@@ -1,5 +1,7 @@
 # Atlas Sidebar
 
+![Atlas Sidebar, vertical tabs for Atlas VTT. The sidebar with the Atlas pin and the open notes beside a world map in Atlas.](assets/atlas-sidebar.jpg)
+
 A browser-style sidebar for [Atlas VTT](https://github.com/atlas-vtt/atlas-vtt). Your open notes live in a vertical tab list with essentials, pinned tabs and folders, and the rest of the UI gets out of the way.
 
 Atlas Sidebar is a fork of [Zen UI](https://github.com/merlinkraemer/obsidian-zen) by Merlin Kraemer. It keeps Zen UI's interface tweaks; Zen UI's Git sync tab is not included.
