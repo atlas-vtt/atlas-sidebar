@@ -52,8 +52,14 @@ type Target = { drop: DropTarget; visual: DropVisual; spring?: string; springSpa
 /** Horizontal travel (px) that switches spaces, and how far the list follows the fingers meanwhile. */
 const SWIPE_THRESHOLD = 70;
 const SWIPE_FOLLOW = 0.35;
-/** A swipe ends when the wheel stays quiet this long; trackpad momentum within it is ignored. */
-const SWIPE_QUIET_MS = 180;
+/**
+ * Pages get no trackpad phases, so a swipe's momentum looks like more swiping. Momentum events come every
+ * frame and never turn round, so a pause this long, or a turn, starts a new swipe (measured: momentum's
+ * gaps stay under 25 ms, the next swipe begins 24 to 130 ms after it, the way back always turned).
+ */
+const SWIPE_GAP_MS = 60;
+/** The list springs back once the wheel has been quiet this long. */
+const SWIPE_SETTLE_MS = 180;
 /** Holding a drag over a space's icon this long switches to that space. */
 const SPRING_SPACE_MS = 700;
 
@@ -76,7 +82,8 @@ export class TabsView extends ItemView {
   private spaceHint!: HTMLElement;
   private slide: 1 | -1 | 0 = 0;
   private pendingSpaceRename = false;
-  private swipe = { travel: 0, locked: false, committed: false, timer: 0 };
+  /** `momentum` is the direction the last switch went in: its events are ignored until a pause. */
+  private swipe = { travel: 0, momentum: 0, committed: false, last: 0, timer: 0 };
   /** The element the current wheel gesture is sent to; see `followWheelTarget`. */
   private wheelTarget: EventTarget | null = null;
   private springSpace: { id: string; timer: number } | null = null;
@@ -461,17 +468,21 @@ export class TabsView extends ItemView {
   private onWheel(e: WheelEvent) {
     if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || this.tabs.spaces().length < 2 || this.drag) return;
     const swipe = this.swipe;
+    if (e.timeStamp - swipe.last > SWIPE_GAP_MS) this.startSwipe();
+    swipe.last = e.timeStamp;
     window.clearTimeout(swipe.timer);
-    swipe.timer = window.setTimeout(() => this.endSwipe(), SWIPE_QUIET_MS);
-    if (swipe.locked) return;
+    swipe.timer = window.setTimeout(() => this.endSwipe(), SWIPE_SETTLE_MS);
     // Line-based wheels (most mice) report notches: one notch, one space.
     const delta = e.deltaMode === 1 ? Math.sign(e.deltaX) * SWIPE_THRESHOLD : e.deltaX;
+    if (swipe.momentum) {
+      if (Math.sign(delta) === swipe.momentum) return;
+      swipe.committed = false;
+    }
     swipe.travel += delta;
     const step: 1 | -1 = swipe.travel > 0 ? 1 : -1;
     const open = this.tabs.canStepSpace(step);
     if (open && Math.abs(swipe.travel) >= SWIPE_THRESHOLD) {
-      swipe.locked = true;
-      swipe.committed = true;
+      Object.assign(swipe, { travel: 0, momentum: step, committed: true });
       void this.tabs.stepSpace(step, false);
       return;
     }
@@ -485,10 +496,15 @@ export class TabsView extends ItemView {
     this.spacePane.style.opacity = String(1 - Math.min(0.4, Math.abs(offset) / 120));
   }
 
+  private startSwipe() {
+    Object.assign(this.swipe, { travel: 0, momentum: 0, committed: false });
+  }
+
   private endSwipe() {
     const swipe = this.swipe;
     const committed = swipe.committed;
-    Object.assign(swipe, { travel: 0, locked: false, committed: false, timer: 0 });
+    this.startSwipe();
+    swipe.timer = 0;
     const pane = this.spacePane;
     pane.removeClass("is-swiping");
     if (committed) return;
