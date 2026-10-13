@@ -1,10 +1,10 @@
 {
-  "id": "zen-ui",
-  "name": "Zen UI",
-  "version": "1.1.4",
+  "id": "atlas-sidebar",
+  "name": "Atlas Sidebar",
+  "version": "2.0.0",
   "minAppVersion": "1.13.0",
-  "description": "make it zen! hide all clutter - focus on what's important.",
-  "author": "Merlin Kraemer",
-  "authorUrl": "https://github.com/merlinkraemer",
+  "description": "Vertical tabs for Atlas VTT: pinned tabs, folders, Essentials and spaces, an Atlas pin, and a clutter-free interface.",
+  "author": "Fabian Urbanek",
+  "authorUrl": "https://github.com/ByteMirror",
   "isDesktopOnly": true
 }

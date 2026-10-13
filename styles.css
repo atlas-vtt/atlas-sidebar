@@ -1,5 +1,24 @@
 /* Obsidian Zen - tweaks toggled via plugin settings */
 
+/* Obsidian turns every aria-label into a tooltip unless --no-tooltip is true. Zen Sidebar's surfaces label
+   their controls for screen readers only; the property inherits, so this covers everything inside them. */
+.zen-tabs,
+.zen-folder-popup,
+.zen-launcher-container,
+.zen-daily-note-button,
+.zen-icon-grid-modal {
+  --no-tooltip: true;
+}
+
+/* One shadow color for every raised surface: warm ink in light themes, black in dark ones.
+   (Ink from the text color would glow white in a dark theme.) */
+.theme-light {
+  --zen-shadow-ink: color-mix(in srgb, var(--text-normal) 16%, transparent);
+}
+.theme-dark {
+  --zen-shadow-ink: rgb(0 0 0 / 0.5);
+}
+
 /* === Tab header at bottom of sidebar === */
 body.zen-tab-header-bottom .workspace-tabs.mod-top-left-space,
 body.zen-tab-header-bottom .workspace-tabs.mod-top-right-space {
@@ -254,6 +273,32 @@ body.zen-hide-root-tabs.is-hidden-frameless .mod-root .view-header-breadcrumb,
 body.zen-hide-root-tabs.is-hidden-frameless .mod-root .view-actions {
   -webkit-app-region: no-drag;
 }
+/* An Atlas map hides its view header, so the band its scene tabs stand in drags the window instead.
+   A drag region takes the pointer from all that lies in it, whatever is drawn on top, so everything
+   Atlas shows there opts out and only the map itself gives up the band.
+   The height is Atlas' top bar row: its 8px inset and its bar. */
+body.zen-hide-root-tabs.is-hidden-frameless:not(.is-fullscreen)
+  .mod-root
+  .workspace-leaf-content[data-type="atlas-vtt"]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  pointer-events: none;
+  -webkit-app-region: drag;
+}
+body.zen-hide-root-tabs.is-hidden-frameless
+  .mod-root
+  .workspace-leaf-content[data-type="atlas-vtt"]
+  :is(
+    .atlas-top-bar-row > *,
+    .atlas-ui > :not(.atlas-top-bar-row, .atlas-map-loading-overlay),
+    .atlas-note-preview-layer > *
+  ) {
+  -webkit-app-region: no-drag;
+}
 body.zen-hide-status-bar .status-bar {
   display: none;
 }
@@ -307,126 +352,6 @@ body.zen-hide-modal-instructions .prompt-instructions {
   line-height: 1.3;
 }
 
-/* === Sync tab === */
-.workspace-leaf-content[data-type="zen-sync"] > .view-content.zen-sync {
-  padding: 0;
-}
-.zen-sync-body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--size-4-1);
-  padding: var(--size-4-3) var(--size-4-4);
-  font-size: var(--font-ui-small);
-}
-.zen-sync-state {
-  display: flex;
-  align-items: center;
-  gap: var(--size-4-2);
-  font-size: var(--font-ui-medium);
-  font-weight: var(--font-medium);
-  color: var(--text-normal);
-}
-.zen-sync-state-icon {
-  display: flex;
-  color: var(--text-faint);
-}
-.zen-sync-state-icon svg {
-  width: var(--icon-s);
-  height: var(--icon-s);
-}
-.zen-sync-state.is-ok .zen-sync-state-icon {
-  color: var(--color-green);
-}
-.zen-sync-state.is-warn .zen-sync-state-icon {
-  color: var(--color-yellow);
-}
-.zen-sync-state.is-error .zen-sync-state-icon {
-  color: var(--text-error);
-}
-.zen-sync-state.is-busy .zen-sync-state-icon svg {
-  animation: zen-spin 1s linear infinite;
-}
-@keyframes zen-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-.zen-sync-actions {
-  display: flex;
-  flex-direction: column;
-  margin: var(--size-4-3) calc(-1 * var(--size-4-2)) 0;
-}
-.zen-sync-action {
-  display: flex;
-  align-items: center;
-  gap: var(--size-4-2);
-  padding: var(--size-4-2);
-  border-radius: var(--radius-m);
-  color: var(--nav-item-color);
-  font-size: var(--nav-item-size);
-  cursor: var(--cursor);
-}
-.zen-sync-action:hover {
-  background: var(--nav-item-background-hover);
-  color: var(--nav-item-color-hover);
-}
-.zen-sync-action.is-disabled {
-  opacity: 0.4;
-  pointer-events: none;
-}
-.zen-sync-action-icon {
-  display: flex;
-  color: var(--icon-color);
-}
-.zen-sync-action-icon svg {
-  width: var(--icon-s);
-  height: var(--icon-s);
-}
-.zen-sync-meta {
-  color: var(--text-faint);
-  font-size: var(--font-ui-smaller);
-}
-.zen-sync-error {
-  color: var(--text-error);
-  font-size: var(--font-ui-smaller);
-  white-space: pre-wrap;
-}
-.zen-sync-section {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  margin-top: var(--size-4-4);
-}
-.zen-sync-heading {
-  color: var(--text-faint);
-  font-size: var(--font-ui-smaller);
-  font-weight: var(--font-medium);
-  margin-bottom: var(--size-4-1);
-}
-.zen-sync-commit {
-  color: var(--text-muted);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.zen-sync-change {
-  display: flex;
-  gap: var(--size-4-2);
-  color: var(--text-muted);
-  white-space: nowrap;
-}
-.zen-sync-code {
-  flex: 0 0 1.2em;
-  color: var(--text-faint);
-  font-family: var(--font-monospace);
-  font-size: var(--font-ui-smaller);
-}
-.zen-sync-path {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .zen-settings .zen-setting-sub {
   padding-left: var(--size-4-6);
 }
@@ -435,4 +360,1428 @@ body.zen-hide-modal-instructions .prompt-instructions {
 }
 .zen-settings .zen-setting-sub input[type="text"] {
   width: 5em;
+}
+
+/* === Vertical tabs (Zen-style sidebar) === */
+/* Roomy spacing is for the file tree: the tabs sidebar keeps one even inset on every side. */
+body.zen-roomy-sidebar.zen-tab-header-bottom
+  .workspace-split:is(.mod-left-split, .mod-right-split)
+  .workspace-tab-container:has(> .workspace-leaf:not([style*="none"]) > .workspace-leaf-content[data-type="zen-tabs"]) {
+  padding-top: 0;
+}
+.workspace-leaf-content[data-type="zen-tabs"] > .view-content.zen-tabs {
+  padding: 0;
+  overflow: hidden;
+}
+.zen-tabs {
+  --zt-row-h: 34px;
+  /* Space between rows (row margins collapse into one gap). */
+  --zt-row-gap: 3px;
+  --zt-radius: 10px;
+  --zt-indent: 14px;
+  --zt-ease: cubic-bezier(0.2, 0, 0, 1);
+  --zt-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --zt-hover: var(--background-modifier-hover);
+  --zt-tile-bg: color-mix(in srgb, var(--text-normal) 5%, transparent);
+  --zt-selected: var(--background-primary);
+  --zt-selected-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.06),
+    0 2px 8px rgb(0 0 0 / 0.05);
+  --zt-folder-hue: var(--interactive-accent);
+}
+.theme-dark .zen-tabs {
+  --zt-selected: color-mix(in srgb, var(--text-normal) 12%, var(--background-secondary));
+  --zt-selected-shadow: 0 0 0 0.5px rgb(255 255 255 / 0.06), 0 1px 2px rgb(0 0 0 / 0.35),
+    0 2px 8px rgb(0 0 0 / 0.2);
+}
+.zen-tabs {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.zen-tabs-scroller {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--size-4-2) var(--size-4-2) var(--size-4-8);
+}
+
+/* Rows: tabs, pins and folder headers */
+.zen-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  height: var(--zt-row-h);
+  margin-block: var(--zt-row-gap);
+  padding-inline: 10px 5px;
+  border-radius: var(--zt-radius);
+  color: var(--nav-item-color);
+  font-size: var(--nav-item-size);
+  cursor: var(--cursor);
+  user-select: none;
+  outline: none;
+  transition:
+    background-color 140ms var(--zt-ease),
+    color 140ms var(--zt-ease),
+    box-shadow 140ms var(--zt-ease),
+    opacity 140ms var(--zt-ease),
+    scale 120ms var(--zt-ease);
+}
+.zen-row:hover {
+  background-color: var(--zt-hover);
+  color: var(--nav-item-color-hover);
+}
+.zen-row:focus-visible {
+  box-shadow: 0 0 0 2px var(--background-modifier-border-focus);
+}
+.zen-row:active:not(:has(.zen-row-action:active, .zen-row-reset:active, .zen-row-rename)) {
+  scale: 0.98;
+}
+.zen-row.is-active {
+  background-color: var(--zt-selected);
+  box-shadow: var(--zt-selected-shadow);
+  color: var(--text-normal);
+}
+.zen-row.is-active:focus-visible {
+  box-shadow: var(--zt-selected-shadow), 0 0 0 2px var(--background-modifier-border-focus);
+}
+.zen-row.is-shown {
+  background-color: color-mix(in srgb, var(--zt-selected) 55%, transparent);
+}
+.zen-row-icon,
+.zen-row-reset {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--icon-color);
+  transition: opacity 140ms var(--zt-ease), color 140ms var(--zt-ease);
+}
+.zen-row-icon svg,
+.zen-row-reset svg {
+  width: var(--icon-s);
+  height: var(--icon-s);
+  stroke-width: var(--icon-s-stroke-width);
+}
+.zen-row.is-active .zen-row-icon {
+  color: var(--text-normal);
+}
+.zen-row.is-unloaded .zen-row-icon {
+  opacity: 0.55;
+}
+.zen-row.is-missing .zen-row-title {
+  color: var(--text-faint);
+  text-decoration: line-through;
+}
+.zen-row-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  /* Fade long titles out like Zen instead of cutting them with an ellipsis. */
+  mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent);
+}
+
+/* Close / unload button */
+.zen-tabs .zen-row-action {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: 7px;
+  color: var(--icon-color);
+  opacity: 0;
+  transition: opacity 120ms var(--zt-ease), background-color 120ms var(--zt-ease);
+}
+.zen-tabs .zen-row-action svg {
+  width: 14px;
+  height: 14px;
+}
+.zen-row:hover > .zen-row-action,
+.zen-row:focus-visible > .zen-row-action,
+.zen-row.is-active > .zen-row-action {
+  opacity: 1;
+}
+.zen-tabs .zen-row-action:hover {
+  background-color: color-mix(in srgb, currentColor 12%, transparent);
+  color: var(--icon-color-hover);
+}
+.zen-tabs .zen-row-action:active {
+  background-color: color-mix(in srgb, currentColor 20%, transparent);
+}
+.zen-tabs .zen-row-action.is-hidden,
+.zen-folder-row.is-unloaded > .zen-row-action {
+  display: none;
+}
+
+/* A pinned tab that navigated elsewhere: its pinned icon becomes a "back" button. */
+.zen-row-reset {
+  display: none;
+}
+.zen-row.is-changed > .zen-row-reset {
+  display: flex;
+  position: relative;
+  height: 24px;
+  margin-inline: -5px -2px;
+  padding-inline: 5px 11px;
+  border-radius: 7px;
+}
+.zen-row.is-changed > .zen-row-reset::after {
+  content: "";
+  position: absolute;
+  right: 3px;
+  top: 50%;
+  width: 1.5px;
+  height: 14px;
+  border-radius: 1px;
+  background: var(--text-faint);
+  transform: translateY(-50%) rotate(16deg);
+  transition: opacity 120ms var(--zt-ease);
+}
+.zen-row-reset:hover {
+  background-color: color-mix(in srgb, currentColor 12%, transparent);
+  color: var(--icon-color-hover);
+}
+.zen-row-reset:hover::after {
+  opacity: 0;
+}
+
+/* Essentials */
+.zen-tabs-essentials {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+  gap: 6px;
+  margin-bottom: var(--size-4-2);
+}
+.zen-tabs-essentials.is-empty {
+  margin-bottom: 0;
+  transition: margin-bottom 200ms var(--zt-ease);
+}
+.zen-tabs.is-dragging .zen-tabs-essentials.is-empty {
+  margin-bottom: var(--size-4-2);
+}
+.zen-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 0;
+  height: 56px;
+  padding: 0 var(--size-4-2);
+  border-radius: 12px;
+  background-color: var(--zt-tile-bg);
+  color: var(--text-muted);
+  cursor: var(--cursor);
+  user-select: none;
+  outline: none;
+  transition:
+    background-color 140ms var(--zt-ease),
+    box-shadow 140ms var(--zt-ease),
+    color 140ms var(--zt-ease),
+    scale 120ms var(--zt-ease);
+}
+.zen-tile:hover {
+  background-color: color-mix(in srgb, var(--text-normal) 9%, transparent);
+  color: var(--text-normal);
+}
+.zen-tile:active:not(:has(.zen-row-rename)) {
+  scale: 0.96;
+}
+.zen-tile:focus-visible {
+  box-shadow: 0 0 0 2px var(--background-modifier-border-focus);
+}
+.zen-tile.is-active {
+  background-color: var(--zt-selected);
+  box-shadow: var(--zt-selected-shadow);
+  color: var(--text-normal);
+}
+.zen-tile.is-shown {
+  background-color: color-mix(in srgb, var(--zt-selected) 60%, var(--zt-tile-bg));
+}
+.zen-tile-icon {
+  display: flex;
+  color: var(--icon-color);
+  transition: opacity 140ms var(--zt-ease), color 140ms var(--zt-ease);
+}
+.zen-tile-icon svg {
+  width: 18px;
+  height: 18px;
+}
+.zen-tile.is-active .zen-tile-icon {
+  color: var(--interactive-accent);
+}
+.zen-tile.is-unloaded .zen-tile-icon {
+  opacity: 0.55;
+}
+.zen-tile.is-changed::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--text-faint);
+}
+.zen-tile-title {
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: var(--font-ui-smaller);
+  line-height: 1.2;
+}
+.zen-tile.is-missing .zen-tile-title {
+  text-decoration: line-through;
+}
+
+/* Folders */
+.zen-folder-row {
+  color: var(--text-normal);
+  font-weight: var(--font-semibold);
+}
+.zen-folder-icon {
+  --zt-back: color-mix(in srgb, var(--zt-folder-hue) 50%, var(--background-secondary));
+  --zt-front: color-mix(in srgb, var(--zt-folder-hue) 22%, var(--background-primary));
+  --zt-stroke: color-mix(in srgb, var(--zt-folder-hue) 78%, var(--text-normal));
+  position: relative;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin-inline: -2px;
+}
+.zen-folder-icon svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.zen-folder-back-shape {
+  fill: var(--zt-back);
+  stroke: var(--zt-stroke);
+  stroke-width: 1.25;
+  stroke-linejoin: round;
+}
+.zen-folder-paper {
+  fill: var(--background-primary);
+  stroke: color-mix(in srgb, var(--zt-stroke) 40%, transparent);
+  stroke-width: 0.75;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transform: translateY(2px);
+  transition: transform 340ms var(--zt-spring);
+}
+.zen-folder-front {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 83.75%;
+  transition: transform 340ms var(--zt-spring);
+}
+.zen-folder-front-shape {
+  fill: var(--zt-front);
+  stroke: var(--zt-stroke);
+  stroke-width: 1.25;
+}
+.zen-folder-dots {
+  fill: var(--zt-stroke);
+  opacity: 0;
+  transition: opacity 200ms var(--zt-ease);
+}
+.zen-folder-glyph {
+  position: absolute;
+  left: 50%;
+  top: 61.25%;
+  display: none;
+  translate: -50% -50%;
+  color: var(--zt-stroke);
+  transition: opacity 200ms var(--zt-ease);
+}
+.zen-folder-glyph.has-icon {
+  display: flex;
+}
+.zen-folder-glyph svg {
+  width: 9px;
+  height: 9px;
+  stroke-width: 3px;
+}
+.zen-folder:not(.is-collapsed) > .zen-folder-row .zen-folder-front {
+  transform: perspective(28px) rotateX(-24deg);
+}
+.zen-folder:not(.is-collapsed) > .zen-folder-row .zen-folder-paper {
+  transform: translateY(-0.5px);
+}
+.zen-folder-row.has-active .zen-folder-dots {
+  opacity: 1;
+}
+.zen-folder-row.has-active .zen-folder-glyph {
+  opacity: 0;
+}
+.zen-folder-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: 1fr;
+  transition:
+    grid-template-rows 280ms var(--zt-ease),
+    opacity 220ms var(--zt-ease);
+}
+.zen-folder.is-collapsed > .zen-folder-body {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+.zen-folder-children {
+  min-width: 0;
+  min-height: 0;
+  padding-inline-start: var(--zt-indent);
+  /* Clip to the animating height, with room for row shadows and focus rings. */
+  clip-path: inset(-4px -6px -4px -6px);
+}
+.zen-folder-peek {
+  padding-inline-start: var(--zt-indent);
+}
+.zen-folder-peek:empty {
+  display: none;
+}
+
+/* Separator with "Clear", and the new tab button */
+.zen-tabs-separator {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 26px;
+  margin: var(--size-4-1) 6px;
+}
+.zen-tabs-separator-line {
+  flex: 1;
+  height: 1px;
+  background: var(--background-modifier-border);
+}
+/* Clear takes no room until the sidebar is hovered; then the line shortens to make way for it (like Zen),
+   so it never has to cover the line with a guess at the sidebar's background. */
+.zen-tabs-clear {
+  display: none;
+  flex: none;
+  align-items: center;
+  gap: 3px;
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 2px 0;
+  border-radius: 6px;
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+  font-weight: var(--font-medium);
+  cursor: var(--cursor);
+  opacity: 0;
+  outline: none;
+  transition:
+    max-width 200ms var(--zt-ease),
+    padding 200ms var(--zt-ease),
+    margin 200ms var(--zt-ease),
+    opacity 140ms var(--zt-ease),
+    color 140ms var(--zt-ease),
+    background-color 140ms var(--zt-ease);
+}
+.zen-tabs-separator.has-tabs .zen-tabs-clear {
+  display: flex;
+}
+.zen-tabs:hover .zen-tabs-clear,
+.zen-tabs-clear:focus-visible {
+  max-width: 96px;
+  margin-inline-start: 6px;
+  padding: 2px 6px;
+  opacity: 1;
+}
+.zen-tabs-clear:hover,
+.zen-tabs-clear:focus-visible {
+  background-image: linear-gradient(var(--zt-hover), var(--zt-hover));
+  color: var(--text-normal);
+}
+.zen-tabs-clear-icon {
+  display: flex;
+}
+.zen-tabs-clear-icon svg {
+  width: 12px;
+  height: 12px;
+  transition: transform 160ms var(--zt-ease);
+}
+.zen-tabs-clear:active .zen-tabs-clear-icon svg {
+  transform: translateY(2px);
+}
+.zen-tabs-new {
+  color: var(--text-faint);
+}
+.zen-tabs-new .zen-row-icon {
+  color: inherit;
+}
+
+/* Inline rename */
+.zen-row.is-renaming > .zen-row-title,
+.zen-tile.is-renaming > .zen-tile-title {
+  display: none;
+}
+.zen-tabs input.zen-row-rename {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 24px;
+  margin-inline-start: -6px;
+  padding: 0 6px;
+  border: none;
+  border-radius: 6px;
+  background: var(--background-primary);
+  box-shadow: 0 0 0 1.5px var(--interactive-accent);
+  color: var(--text-normal);
+  font: inherit;
+}
+.zen-tile input.zen-row-rename {
+  flex: none;
+  width: 100%;
+  height: 20px;
+  margin: 0;
+  text-align: center;
+  font-size: var(--font-ui-smaller);
+}
+
+/* Drag and drop */
+.zen-tabs .is-drag-source {
+  opacity: 0.35;
+}
+.zen-drop-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  border-radius: 2px;
+  background: var(--interactive-accent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 100ms var(--zt-ease);
+}
+.zen-drop-indicator.is-visible {
+  opacity: 1;
+}
+.zen-drop-indicator:not(.is-vertical)::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -5px;
+  width: 6px;
+  height: 6px;
+  border: 2px solid var(--interactive-accent);
+  border-radius: 50%;
+  background: var(--background-secondary);
+  translate: 0 -50%;
+}
+.zen-row.is-drop-inside {
+  background-color: color-mix(in srgb, var(--interactive-accent) 14%, transparent);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--interactive-accent) 65%, transparent);
+}
+/* Empty sections open a drop zone while dragging; it eases open so the list doesn't jump under the pointer. */
+.zen-tabs-pinned.is-empty::before,
+.zen-tabs-essentials.is-empty::before {
+  content: attr(data-empty-label);
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: 38px;
+  max-height: 0;
+  overflow: hidden;
+  border: 0 dashed var(--background-modifier-border-hover);
+  border-radius: var(--zt-radius);
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+  opacity: 0;
+  transition:
+    max-height 200ms var(--zt-ease),
+    opacity 160ms var(--zt-ease),
+    border-color 120ms var(--zt-ease),
+    color 120ms var(--zt-ease),
+    background-color 120ms var(--zt-ease);
+}
+.zen-tabs.is-dragging .zen-tabs-pinned.is-empty::before,
+.zen-tabs.is-dragging .zen-tabs-essentials.is-empty::before {
+  max-height: 38px;
+  border-width: 1.5px;
+  opacity: 1;
+}
+.zen-tabs-pinned.is-empty.is-drop-inside::before,
+.zen-tabs-essentials.is-empty.is-drop-inside::before {
+  border-color: var(--interactive-accent);
+  background-color: color-mix(in srgb, var(--interactive-accent) 8%, transparent);
+  color: var(--text-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zen-tabs :is(.zen-row, .zen-tile, .zen-folder-body, .zen-folder-front, .zen-folder-paper) {
+    transition: none;
+  }
+}
+
+/* Pickers */
+.zen-icon-suggestion,
+.zen-color-suggestion {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-3);
+}
+.zen-icon-suggestion-icon {
+  display: flex;
+  color: var(--icon-color);
+}
+.zen-color-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--zt-swatch);
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.12);
+}
+.zen-color-check {
+  display: flex;
+  margin-inline-start: auto;
+  color: var(--text-accent);
+}
+
+/* Split view in the sidebar: one row, one segment per tab */
+.zen-split-row {
+  gap: 0;
+  padding-inline: 4px;
+}
+.zen-split-seg {
+  position: relative;
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  height: 26px;
+  padding-inline: 6px 2px;
+  border-radius: 7px;
+  transition: background-color 120ms var(--zt-ease), color 120ms var(--zt-ease);
+}
+.zen-split-seg + .zen-split-seg::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: -0.5px;
+  width: 1px;
+  background: var(--background-modifier-border);
+}
+.zen-split-seg:hover {
+  background-color: color-mix(in srgb, currentColor 8%, transparent);
+}
+.zen-split-row.is-active .zen-split-seg:not(.is-focused) {
+  color: var(--text-muted);
+}
+.zen-split-row.is-active .zen-split-seg.is-focused {
+  background-color: color-mix(in srgb, var(--text-normal) 6%, transparent);
+}
+.zen-tabs .zen-split-seg .zen-row-action {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+}
+.zen-split-seg:hover > .zen-row-action {
+  opacity: 1;
+}
+
+/* Ctrl/Cmd-click selection */
+.zen-tabs [data-row].is-selected {
+  background-color: color-mix(in srgb, var(--interactive-accent) 16%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--interactive-accent) 45%, transparent);
+  color: var(--text-normal);
+}
+
+/* Split view in the editor: panes that aren't part of what's selected step aside */
+.workspace-split.mod-root .zen-split-hidden {
+  display: none;
+}
+.workspace-split.mod-root .zen-split-last-visible > .workspace-leaf-resize-handle {
+  display: none;
+}
+/* Split panes are cards with a gap between them; the pane in use wears the focus ring (Zen). */
+body.zen-split-showing .workspace-split.mod-root {
+  background-color: var(--background-secondary);
+}
+.workspace-split.mod-root .workspace-tabs.zen-split-pane {
+  position: relative;
+  margin: 4px;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 0 0 1px var(--background-modifier-border);
+  transition: box-shadow 160ms var(--zt-ease, ease);
+}
+/* The gap comes out of the pane's size, so panes end inside the window instead of 8px past it. */
+.workspace-split.mod-root .workspace-split.mod-vertical > .workspace-tabs.zen-split-pane,
+.workspace-split.mod-root.mod-vertical > .workspace-tabs.zen-split-pane {
+  height: calc(100% - 8px);
+}
+.workspace-split.mod-root .workspace-split.mod-horizontal > .workspace-tabs.zen-split-pane,
+.workspace-split.mod-root.mod-horizontal > .workspace-tabs.zen-split-pane {
+  width: calc(100% - 8px);
+}
+/* The pane's own border marks its edge; Obsidian's divider line would double it (the handle still resizes). */
+.workspace-split.mod-root .workspace-tabs.zen-split-pane > .workspace-leaf-resize-handle {
+  border-color: transparent;
+}
+.workspace-split.mod-root .workspace-tabs.zen-split-pane.is-focused {
+  box-shadow: 0 0 0 2px var(--interactive-accent);
+}
+/* The handle that hangs from a pane's top edge on hover: drag to swap panes, click for the split's options.
+   It sits over the note header, which drags the window and so hides the pointer from the page: the handle
+   stays in place while hidden and opts out of window dragging, so reaching it is what shows it, and it
+   lingers a moment so crossing the header from the note doesn't hide it first. */
+.zen-split-handle {
+  --no-tooltip: true;
+  -webkit-app-region: no-drag;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 20;
+  display: flex;
+  gap: 2px;
+  padding: 2px 5px 3px;
+  border-radius: 0 0 10px 10px;
+  background: var(--background-secondary);
+  box-shadow:
+    0 0 0 1px var(--background-modifier-border),
+    0 4px 10px -6px var(--zen-shadow-ink);
+  opacity: 0;
+  transform: translate(-50%, -6px);
+  transition:
+    transform 160ms cubic-bezier(0.2, 0, 0, 1) 400ms,
+    opacity 140ms ease 400ms;
+}
+.zen-split-pane:hover > .zen-split-handle,
+.zen-split-handle:hover,
+.zen-split-handle.is-open {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  transition-delay: 60ms;
+}
+body.zen-pane-dragging .zen-split-handle {
+  opacity: 0;
+  transform: translate(-50%, -100%);
+}
+.zen-split-handle-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 20px;
+  border-radius: 7px;
+  color: var(--icon-color);
+  cursor: var(--cursor);
+}
+.zen-split-handle-button.is-grip {
+  cursor: grab;
+}
+.zen-split-handle-button:hover {
+  background-color: var(--background-modifier-hover);
+  color: var(--icon-color-hover);
+}
+.zen-split-handle-button svg {
+  width: 14px;
+  height: 14px;
+}
+.workspace-split.mod-root .workspace-tabs.zen-split-pane.is-swap-target::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--interactive-accent) 12%, transparent);
+  box-shadow: inset 0 0 0 2px var(--interactive-accent);
+  pointer-events: none;
+}
+/* Drag-to-split: the main area makes room while a placeholder pane grows into it. */
+.workspace-split.mod-root.zen-split-squeezing {
+  transition: padding 110ms ease-out;
+}
+.zen-split-placeholder {
+  position: fixed;
+  /* Purely visual: drag events go on to the main area, where the drop is handled. */
+  pointer-events: none;
+  z-index: var(--layer-popover);
+  border: 2px solid var(--interactive-accent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--interactive-accent) 9%, var(--background-primary));
+  box-shadow: 0 16px 40px -16px var(--zen-shadow-ink);
+}
+body.zen-split-previewing .drag-ghost {
+  opacity: 0;
+}
+
+/* New tab launcher: Zen's floating address bar */
+.modal-container.zen-launcher-container .modal-bg {
+  backdrop-filter: blur(2px);
+}
+.prompt.zen-launcher {
+  --zl-radius: 18px;
+  width: min(660px, 92vw);
+  max-width: none;
+  top: max(72px, 14vh);
+  overflow: hidden;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--zl-radius);
+  background: color-mix(in srgb, var(--background-primary) 92%, transparent);
+  box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.06), 0 12px 28px rgb(0 0 0 / 0.14), 0 32px 80px rgb(0 0 0 / 0.18);
+  backdrop-filter: blur(28px) saturate(1.4);
+  animation: zen-launcher-in 180ms cubic-bezier(0.2, 0, 0, 1);
+}
+@keyframes zen-launcher-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+}
+.zen-launcher .prompt-input-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+.zen-launcher-search-icon {
+  display: flex;
+  flex: none;
+  color: var(--text-faint);
+}
+.zen-launcher-search-icon svg {
+  width: 20px;
+  height: 20px;
+}
+.zen-launcher .prompt-input-container input.prompt-input {
+  flex: 1;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  font-size: 18px;
+}
+.zen-launcher .search-input-clear-button {
+  position: static;
+  flex: none;
+  opacity: 0.45;
+  transform: scale(0.8);
+}
+.zen-launcher .search-input-clear-button:hover {
+  opacity: 0.8;
+}
+.zen-launcher .prompt-results {
+  max-height: min(440px, 52vh);
+  padding: 6px;
+}
+.zen-launcher .suggestion-item.zen-launcher-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 10px;
+  border-radius: 11px;
+}
+.zen-launcher .suggestion-item.zen-launcher-item.is-selected {
+  background-color: color-mix(in srgb, var(--interactive-accent) 14%, transparent);
+}
+.zen-launcher-icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--background-modifier-hover);
+  color: var(--icon-color);
+}
+.zen-launcher-icon svg {
+  width: 16px;
+  height: 16px;
+}
+.zen-launcher-item.is-create .zen-launcher-icon,
+.zen-launcher-item.is-selected .zen-launcher-icon {
+  background: color-mix(in srgb, var(--interactive-accent) 18%, transparent);
+  color: var(--interactive-accent);
+}
+.zen-launcher-text {
+  flex: 1;
+  min-width: 0;
+}
+.zen-launcher-title,
+.zen-launcher-path {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.zen-launcher-title {
+  color: var(--text-normal);
+  font-size: var(--font-ui-medium);
+}
+.zen-launcher-path {
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+}
+.zen-launcher-quote {
+  font-weight: var(--font-semibold);
+}
+.zen-launcher-action {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--background-modifier-hover);
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+.zen-launcher-item.is-selected .zen-launcher-action {
+  opacity: 1;
+}
+.zen-launcher .prompt-instructions {
+  padding: 8px 18px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+@media (prefers-reduced-motion: reduce) {
+  .prompt.zen-launcher {
+    animation: none;
+  }
+}
+
+/* === Atlas pin: Atlas VTT across the top of the tabs sidebar ===
+   Built from theme tokens, so it reads as part of whatever theme is active. */
+.zen-tabs-header {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  padding: var(--size-4-2) var(--size-4-2) var(--size-4-1);
+}
+/* A hairline under the pinned header once the list scrolls beneath it. */
+.zen-tabs-header::after {
+  content: "";
+  position: absolute;
+  inset: auto var(--size-4-2) 0;
+  height: 1px;
+  background: var(--background-modifier-border);
+  opacity: 0;
+  transition: opacity 160ms var(--zt-ease);
+}
+.zen-tabs-header.is-scrolled::after {
+  opacity: 1;
+}
+.zen-atlas {
+  --za-ink-shadow: var(--zen-shadow-ink);
+  /* The card's edge and its elevation, varied by state below. */
+  --za-ring: 0 0 0 1px var(--background-modifier-border);
+  --za-lift: 0 1px 2px var(--za-ink-shadow), 0 8px 18px -10px var(--za-ink-shadow);
+  position: relative;
+  height: 88px;
+  overflow: hidden;
+  /* Overridden on macOS with a radius concentric with the window corner; round like the window's own. */
+  border-radius: 14px;
+  corner-shape: round;
+  background-color: var(--background-primary);
+  box-shadow: var(--za-ring), var(--za-lift);
+  cursor: var(--cursor);
+  isolation: isolate;
+  outline: none;
+  user-select: none;
+  /* Releasing springs back; pressing (below) answers at once. */
+  transition:
+    transform 320ms var(--zt-spring),
+    background-color 200ms var(--zt-ease),
+    box-shadow 220ms var(--zt-ease);
+}
+/* A faint wash of the theme's ink in the far corner, so the art has depth to sit in. */
+.zen-atlas-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: radial-gradient(110% 130% at 100% 100%, color-mix(in srgb, var(--zen-shadow-ink) 50%, transparent), transparent 60%);
+  opacity: 0.8;
+  pointer-events: none;
+  transition: opacity 200ms var(--zt-ease);
+}
+/* Upright like the logo: the hilt near the top edge, the crossguard 14px from the right, the blade
+   running off the bottom. The image is mostly margin around the sword, hence the negative offset. */
+.zen-atlas-art {
+  position: absolute;
+  z-index: -1;
+  top: 7px;
+  right: -17px;
+  width: 111px;
+  height: 160px;
+  background: var(--zen-atlas-art) no-repeat 0 0 / 111px auto;
+  filter: drop-shadow(0 4px 6px var(--za-ink-shadow));
+  pointer-events: none;
+  transition: transform 420ms var(--zt-spring);
+}
+/* Hover: the card rises a little off the sidebar, its surface warms and the sword lifts with it. */
+.zen-atlas:hover {
+  --za-ring: 0 0 0 1px var(--background-modifier-border-hover);
+  --za-lift: 0 2px 4px var(--za-ink-shadow), 0 14px 28px -12px var(--za-ink-shadow);
+  background-color: color-mix(in srgb, var(--background-primary), var(--text-normal) 3%);
+  transform: translateY(-1px);
+}
+.zen-atlas:hover .zen-atlas-backdrop {
+  opacity: 1;
+}
+.zen-atlas:hover .zen-atlas-art {
+  transform: translateY(-3px);
+}
+.zen-atlas:hover .zen-atlas-sub {
+  color: var(--text-normal);
+}
+/* Press: it settles back down, close to the sidebar, and the sword with it. */
+.zen-atlas:active {
+  --za-lift: 0 1px 1px var(--za-ink-shadow), 0 3px 8px -6px var(--za-ink-shadow);
+  background-color: color-mix(in srgb, var(--background-primary), var(--text-normal) 6%);
+  transform: translateY(0) scale(0.98);
+  transition-duration: 90ms;
+  transition-timing-function: var(--zt-ease);
+}
+.zen-atlas:active .zen-atlas-art {
+  transform: translateY(0);
+  transition-duration: 90ms;
+}
+.zen-atlas-text {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 16px;
+  right: 72px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+}
+.zen-atlas-title {
+  color: var(--text-normal);
+  font-family: var(--atlas-theme-heading-font, "Atlas Fantaisie Artistique", "Iowan Old Style", Palatino, Georgia, serif);
+  font-size: 27px;
+  line-height: 1.05;
+}
+.zen-atlas-sub {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  transition: color 200ms var(--zt-ease);
+}
+.zen-atlas-sub-icon {
+  display: flex;
+  flex: none;
+  color: var(--icon-color);
+}
+.zen-atlas-sub-icon svg {
+  width: 12px;
+  height: 12px;
+}
+.zen-atlas-sub-text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+/* Atlas has focus: a hairline in the theme's accent. */
+.zen-atlas.is-active {
+  --za-ring: 0 0 0 1px color-mix(in srgb, var(--interactive-accent) 70%, transparent);
+}
+.zen-atlas.is-active .zen-atlas-sub {
+  color: var(--text-normal);
+}
+.zen-atlas:focus-visible {
+  box-shadow: var(--za-ring), 0 0 0 3px var(--background-modifier-border-focus), var(--za-lift);
+}
+@media (prefers-reduced-motion: reduce) {
+  .zen-atlas,
+  .zen-atlas-art,
+  .zen-atlas-backdrop {
+    transition: none;
+  }
+  .zen-atlas:hover,
+  .zen-atlas:active,
+  .zen-atlas:hover .zen-atlas-art {
+    transform: none;
+  }
+}
+
+/* === Folder popup: a collapsed folder's tabs, with search (Zen) === */
+.zen-folder-row.is-peeking {
+  background-color: var(--zt-hover);
+}
+.zen-folder-popup {
+  --zp-ink-shadow: var(--zen-shadow-ink);
+  position: fixed;
+  z-index: var(--layer-popover);
+  display: flex;
+  flex-direction: column;
+  width: 288px;
+  overflow: hidden;
+  border-radius: 14px;
+  /* The window's own curve (a squircle on macOS), so corners set concentric with it stay parallel. */
+  corner-shape: var(--corner-shape, round);
+  background: var(--background-primary);
+  box-shadow:
+    0 0 0 1px var(--background-modifier-border),
+    0 2px 6px var(--zp-ink-shadow),
+    0 16px 36px -12px var(--zp-ink-shadow);
+  animation: zen-popup-in 170ms cubic-bezier(0.2, 0, 0, 1);
+}
+.zen-folder-popup.is-closing {
+  animation: zen-popup-out 120ms cubic-bezier(0.4, 0, 1, 1) forwards;
+  pointer-events: none;
+}
+@keyframes zen-popup-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+@keyframes zen-popup-out {
+  to {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+.zen-folder-popup-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 10px 10px 14px;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+.zen-folder-popup-search-icon {
+  display: flex;
+  flex: none;
+  color: var(--text-faint);
+}
+.zen-folder-popup-search-icon svg {
+  width: 17px;
+  height: 17px;
+}
+.zen-folder-popup-search input[type="text"] {
+  flex: 1;
+  min-width: 0;
+  height: 26px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  color: var(--text-normal);
+  font-size: var(--font-ui-medium);
+}
+.zen-folder-popup-clear {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: 7px;
+}
+.zen-folder-popup-clear svg {
+  width: 14px;
+  height: 14px;
+}
+.zen-folder-popup-clear.is-hidden {
+  visibility: hidden;
+}
+.zen-folder-popup-list {
+  max-height: calc(6 * 46px + 8px);
+  overflow-y: auto;
+  padding: 4px;
+}
+.zen-folder-popup-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  height: 46px;
+  padding: 0 10px;
+  border-radius: 10px;
+  cursor: var(--cursor);
+  transition: background-color 90ms var(--zt-ease);
+}
+.zen-folder-popup-item.is-selected {
+  background-color: var(--background-modifier-hover);
+}
+.zen-folder-popup-icon {
+  display: flex;
+  flex: none;
+  color: var(--icon-color);
+}
+.zen-folder-popup-icon svg {
+  width: var(--icon-s);
+  height: var(--icon-s);
+}
+.zen-folder-popup-item:not(.is-loaded) .zen-folder-popup-icon {
+  opacity: 0.6;
+}
+.zen-folder-popup-labels {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.zen-folder-popup-title,
+.zen-folder-popup-detail {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.zen-folder-popup-title {
+  color: var(--text-normal);
+  font-size: var(--font-ui-small);
+}
+.zen-folder-popup-detail {
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+}
+.zen-folder-popup-empty {
+  padding: 18px 16px;
+  color: var(--text-faint);
+  font-size: var(--font-ui-small);
+  text-align: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .zen-folder-popup,
+  .zen-folder-popup.is-closing {
+    animation: none;
+  }
+}
+.zen-folder-popup.is-empty {
+  width: auto;
+  max-width: 260px;
+}
+.zen-folder-popup-empty-state {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+}
+.zen-folder-popup-empty-title {
+  color: var(--text-normal);
+  font-size: var(--font-ui-small);
+  font-weight: var(--font-medium);
+}
+.zen-folder-popup-empty-hint {
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+}
+
+/* === Spaces === */
+.zen-fantasy-icon {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* Obsidian's own tab bar, when shown, lists only the active space's tabs. */
+.workspace-tab-header.zen-other-space {
+  display: none;
+}
+.zen-space-pane {
+  will-change: transform;
+}
+.zen-space-header {
+  height: 30px;
+  margin-bottom: 2px;
+  padding-inline: 10px 8px;
+  color: var(--text-normal);
+  font-weight: var(--font-semibold);
+}
+.zen-space-header-icon {
+  display: flex;
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--icon-color);
+}
+.zen-space-header-more {
+  display: flex;
+  flex: none;
+  color: var(--text-faint);
+  opacity: 0;
+  transition: opacity 120ms var(--zt-ease);
+}
+.zen-space-header-more svg {
+  width: 14px;
+  height: 14px;
+}
+.zen-space-header:hover .zen-space-header-more,
+.zen-space-header:focus-visible .zen-space-header-more {
+  opacity: 1;
+}
+.zen-space-switcher {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 8px 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.zen-space-switcher::-webkit-scrollbar {
+  display: none;
+}
+.zen-space-button {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 7px;
+  border-radius: 9px;
+  color: var(--icon-color);
+  cursor: var(--cursor);
+  outline: none;
+  transition:
+    background-color 140ms var(--zt-ease),
+    color 140ms var(--zt-ease),
+    box-shadow 140ms var(--zt-ease),
+    scale 120ms var(--zt-ease);
+}
+.zen-space-button svg {
+  width: 16px;
+  height: 16px;
+}
+.zen-space-button:hover {
+  background-color: var(--zt-hover);
+  color: var(--icon-color-hover);
+}
+.zen-space-button:active {
+  scale: 0.92;
+}
+.zen-space-button:focus-visible {
+  box-shadow: 0 0 0 2px var(--background-modifier-border-focus);
+}
+.zen-space-button.is-active {
+  background-color: var(--zt-selected);
+  box-shadow: var(--zt-selected-shadow);
+  color: var(--text-normal);
+}
+.zen-space-button.zen-space-add {
+  color: var(--text-faint);
+}
+.zen-space-button.is-drop-inside {
+  background-color: color-mix(in srgb, var(--interactive-accent) 16%, transparent);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--interactive-accent) 70%, transparent);
+}
+/* The hovered space's name: our own hint, since Obsidian's tooltips stay off. */
+.zen-space-hint {
+  position: absolute;
+  z-index: 10;
+  padding: 3px 8px;
+  border-radius: 7px;
+  background: var(--background-primary);
+  box-shadow:
+    0 0 0 1px var(--background-modifier-border),
+    0 4px 10px -4px var(--zen-shadow-ink);
+  color: var(--text-normal);
+  font-size: var(--font-ui-smaller);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 6px)) scale(0.96);
+  transform-origin: 50% 100%;
+  transition:
+    opacity 120ms var(--zt-ease),
+    transform 160ms var(--zt-ease);
+}
+.zen-space-hint.is-shown {
+  opacity: 1;
+  transform: translate(-50%, calc(-100% - 6px));
+}
+
+/* Fantasy icon picker */
+.modal.zen-icon-grid-modal {
+  width: min(470px, 92vw);
+}
+.zen-icon-grid-modal .zen-icon-grid-search {
+  width: 100%;
+  margin-bottom: var(--size-4-3);
+}
+.zen-icon-grid-body {
+  max-height: min(52vh, 460px);
+  overflow-y: auto;
+  margin-inline: -4px;
+  padding-inline: 4px;
+}
+.zen-icon-grid-heading {
+  margin: var(--size-4-3) 0 var(--size-4-1);
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+  font-weight: var(--font-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.zen-icon-grid-heading:first-child {
+  margin-top: 0;
+}
+.zen-icon-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+}
+.zen-icon-grid-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  padding: 9px;
+  border-radius: 10px;
+  color: var(--text-muted);
+  cursor: var(--cursor);
+  outline: none;
+  transition: background-color 100ms var(--zt-ease), color 100ms var(--zt-ease);
+}
+.zen-icon-grid-item:hover,
+.zen-icon-grid-item:focus-visible {
+  background-color: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+.zen-icon-grid-item:focus-visible {
+  box-shadow: 0 0 0 2px var(--background-modifier-border-focus);
+}
+.zen-icon-grid-item.is-current {
+  background-color: color-mix(in srgb, var(--interactive-accent) 14%, transparent);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--interactive-accent) 70%, transparent);
+  color: var(--text-normal);
+}
+.zen-icon-grid-empty {
+  padding: var(--size-4-6) 0;
+  color: var(--text-faint);
+  text-align: center;
+}
+.zen-icon-grid-status {
+  min-height: 1.4em;
+  margin-top: var(--size-4-3);
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+  text-align: center;
+}
+.zen-icon-suggestion-icon .zen-fantasy-icon {
+  width: 16px;
+  height: 16px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .zen-space-button,
+  .zen-space-hint {
+    transition: none;
+  }
+}
+
+/* Screen-reader text (instead of aria-label, which Obsidian turns into tooltips). */
+.zen-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }

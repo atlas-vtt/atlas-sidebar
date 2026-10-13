@@ -37,6 +37,7 @@ const context = await esbuild.context({
   treeShaking: true,
   outfile: "main.js",
   platform: "browser",
+  loader: { ".webp": "dataurl" },
 });
 
 if (prod) {

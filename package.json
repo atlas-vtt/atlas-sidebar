@@ -1,14 +1,14 @@
 {
-  "name": "zen-ui",
-  "version": "1.1.4",
-  "description": "make it zen! hide all clutter - focus on what's important.",
+  "name": "atlas-sidebar",
+  "version": "2.0.0",
+  "description": "Vertical tabs for Atlas VTT: pinned tabs, folders, Essentials and spaces, an Atlas pin, and a clutter-free interface.",
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",
     "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production"
   },
   "keywords": [],
-  "author": "Merlin Kraemer",
+  "author": "Fabian Urbanek",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.11.0",
