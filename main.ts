@@ -434,7 +434,7 @@ export default class ObsidianZenPlugin extends Plugin {
     });
     this.addCommand({
       id: "tabs-toggle-essential",
-      name: "Add or remove current tab from Essentials",
+      name: "Add or remove current tab from essentials",
       checkCallback: withLeaf((leaf) => this.tabs.toggleEssential(leaf)),
     });
     this.addCommand({
@@ -590,7 +590,7 @@ export default class ObsidianZenPlugin extends Plugin {
     const original = command?.checkCallback;
     if (!command || !original) return;
     command.checkCallback = (checking) => {
-      if (!this.settings.zenNewTab) return original.call(command, checking);
+      if (!this.settings.zenNewTab) return original.call(command, checking) as boolean | void;
       if (!checking) this.openLauncher();
       return true;
     };
@@ -804,7 +804,7 @@ export default class ObsidianZenPlugin extends Plugin {
       commands: { executeCommandById: (id: string) => boolean };
     }).commands;
     if (!cmds.executeCommandById("daily-notes")) {
-      new Notice("Atlas Sidebar: enable the daily notes core plugin to use this button.");
+      new Notice("Enable the daily notes core plugin to use this button.");
     }
   }
 

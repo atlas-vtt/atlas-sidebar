@@ -1574,6 +1574,15 @@ body.zen-split-previewing .drag-ghost {
 .zen-space-pane {
   will-change: transform;
 }
+/* While a swipe drags the pane it follows the fingers at once; letting go springs it back. */
+.zen-space-pane.is-swiping {
+  transition: none;
+}
+.zen-space-pane.is-settling {
+  transition:
+    transform 260ms cubic-bezier(0.2, 0, 0, 1),
+    opacity 200ms ease;
+}
 .zen-space-header {
   height: 30px;
   margin-bottom: 2px;

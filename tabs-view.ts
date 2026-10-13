@@ -18,7 +18,7 @@ import { ColorPicker, FolderPicker, IconPicker, SpacePicker } from "./tabs-modal
 import { ATLAS_ART, ATLAS_COMMANDS, isAtlasMap } from "./atlas";
 import { FolderPeek } from "./tabs-folder-peek";
 import { fitWindowCorners } from "./window-corners";
-import { ConfirmModal, FantasyIconPicker, fantasyIconName, renderFantasyIcon } from "./space-icons";
+import { ConfirmModal, FantasyIconPicker, renderFantasyIcon } from "./space-icons";
 import { Space, walkPins as walkSpacePins } from "./tabs-model";
 
 /** The Atlas card's own corner radius, where no window corner is near. */
@@ -205,14 +205,14 @@ export class TabsView extends ItemView {
   async onClose() {
     this.peek.close(false);
     this.followWheelTarget(null);
-    cancelAnimationFrame(this.frame);
+    window.cancelAnimationFrame(this.frame);
     this.frame = 0;
     this.endDrag();
   }
 
   /** Coalesce bursts of workspace events into a single render per frame. */
   private schedule() {
-    if (!this.frame) this.frame = requestAnimationFrame(() => this.render());
+    if (!this.frame) this.frame = window.requestAnimationFrame(() => this.render());
   }
 
   private buildSkeleton() {
@@ -229,7 +229,7 @@ export class TabsView extends ItemView {
 
     this.essentialsEl = this.scroller.createDiv({
       cls: "zen-tabs-essentials",
-      attr: { role: "list", "data-empty-label": "Drop here to add to Essentials" },
+      attr: { role: "list", "data-empty-label": "Drop here to add to essentials" },
     });
     // Everything below Essentials belongs to the active space and slides when spaces switch.
     this.spacePane = this.scroller.createDiv({ cls: "zen-space-pane" });
@@ -479,7 +479,8 @@ export class TabsView extends ItemView {
     // Past the first or last space the list only gives a little, like a rubber band.
     const follow = open ? SWIPE_FOLLOW : SWIPE_FOLLOW / 4;
     const offset = Math.max(-48, Math.min(48, -swipe.travel * follow));
-    this.spacePane.style.transition = "none";
+    this.spacePane.removeClass("is-settling");
+    this.spacePane.addClass("is-swiping");
     this.spacePane.style.transform = `translateX(${offset}px)`;
     this.spacePane.style.opacity = String(1 - Math.min(0.4, Math.abs(offset) / 120));
   }
@@ -488,9 +489,10 @@ export class TabsView extends ItemView {
     const swipe = this.swipe;
     const committed = swipe.committed;
     Object.assign(swipe, { travel: 0, locked: false, committed: false, timer: 0 });
-    if (committed) return;
     const pane = this.spacePane;
-    pane.style.transition = "transform 260ms cubic-bezier(0.2, 0, 0, 1), opacity 200ms ease";
+    pane.removeClass("is-swiping");
+    if (committed) return;
+    pane.addClass("is-settling");
     pane.style.removeProperty("transform");
     pane.style.removeProperty("opacity");
   }
@@ -618,7 +620,7 @@ export class TabsView extends ItemView {
     menu.addItem((i) => i.setTitle("Open player window").setIcon("monitor").onClick(run(ATLAS_COMMANDS.playerWindow)));
     if (this.snap?.atlas.length) {
       menu.addSeparator();
-      menu.addItem((i) => i.setTitle("Close Atlas tabs").setIcon("x").onClick(() => this.tabs.closeAtlas()));
+      menu.addItem((i) => i.setTitle("Close map and dashboard tabs").setIcon("x").onClick(() => this.tabs.closeAtlas()));
     }
     return menu;
   }
@@ -1099,7 +1101,7 @@ export class TabsView extends ItemView {
     if (!allEssentials && this.tabs.canDropMany(sources, this.tabs.essentialsEnd())) {
       menu.addItem((i) =>
         i
-          .setTitle("Add to Essentials")
+          .setTitle("Add to essentials")
           .setIcon("layout-grid")
           .onClick(run(() => this.tabs.moveMany(sources, this.tabs.essentialsEnd())))
       );
@@ -1110,7 +1112,7 @@ export class TabsView extends ItemView {
         i
           .setTitle(
             allEssentials
-              ? "Remove from Essentials"
+              ? "Remove from essentials"
               : pins.length === sources.length
                 ? `Unpin ${what}`
                 : `Unpin ${pins.length} pinned tabs`
@@ -1266,7 +1268,7 @@ export class TabsView extends ItemView {
       );
       menu.addItem((i) =>
         i
-          .setTitle("Add to Essentials")
+          .setTitle("Add to essentials")
           .setIcon("layout-grid")
           .onClick(() => void this.tabs.move(src, this.tabs.essentialsEnd()))
       );
@@ -1324,14 +1326,14 @@ export class TabsView extends ItemView {
       );
       menu.addItem((i) =>
         i
-          .setTitle("Remove from Essentials")
+          .setTitle("Remove from essentials")
           .setIcon("pin-off")
           .onClick(() => this.tabs.unpin(pin.id))
       );
     } else {
       menu.addItem((i) =>
         i
-          .setTitle("Add to Essentials")
+          .setTitle("Add to essentials")
           .setIcon("layout-grid")
           .onClick(() => void this.tabs.move(src, this.tabs.essentialsEnd()))
       );
@@ -1769,7 +1771,7 @@ export class TabsView extends ItemView {
 
 function dropLabel(src: DragSource, target: DropTarget): string {
   if (target.zone === "space") return "Move to space";
-  if (target.zone === "essentials") return "Add to Essentials";
+  if (target.zone === "essentials") return "Add to essentials";
   if (target.zone === "tabs") {
     if (src.kind === "tab" || src.kind === "split") return "Move";
     if (src.kind === "files") return "Open in new tab";
@@ -1781,7 +1783,7 @@ function dropLabel(src: DragSource, target: DropTarget): string {
 
 function groupDropLabel(count: number, target: DropTarget): string {
   if (target.zone === "space") return `Move ${count} tabs to space`;
-  if (target.zone === "essentials") return `Add ${count} to Essentials`;
+  if (target.zone === "essentials") return `Add ${count} to essentials`;
   if (target.zone === "tabs") return `Move ${count} tabs`;
   return target.parentId ? `Move ${count} into folder` : `Pin ${count} tabs`;
 }

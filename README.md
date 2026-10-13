@@ -1,6 +1,6 @@
 # Atlas Sidebar
 
-A browser-style sidebar for [Atlas VTT](https://github.com/atlas-vtt/atlas-vtt). Your open notes live in a vertical tab list with Essentials, pinned tabs and folders, and the rest of the UI gets out of the way.
+A browser-style sidebar for [Atlas VTT](https://github.com/atlas-vtt/atlas-vtt). Your open notes live in a vertical tab list with essentials, pinned tabs and folders, and the rest of the UI gets out of the way.
 
 Atlas Sidebar is a fork of [Zen UI](https://github.com/merlinkraemer/obsidian-zen) by Merlin Kraemer. It keeps Zen UI's interface tweaks; Zen UI's Git sync tab is not included.
 
@@ -61,20 +61,20 @@ The launcher takes over Obsidian's own "New tab" command, so it uses whatever ho
 
 | To | Do |
 | --- | --- |
-| Pin, add to Essentials, or file into a folder | Drag the tab there, or right-click it |
+| Pin, add to essentials, or file into a folder | Drag the tab there, or right-click it |
 | Pin a note from the file explorer | Drag it into the sidebar |
 | Create a folder | Right-click a tab → **New folder with tab**, or right-click empty space |
 | Rename, change icon or color | Right-click the folder or pin; **F2** renames |
 | Close a tab | Hover and click **×**, middle-click, or press **Delete** |
 | Move between tabs | **↑ ↓** in the sidebar; **→ ←** expand and collapse folders |
 | Select several tabs | **Cmd/Ctrl-click** tabs, or **Shift-click** for a range; **Esc** clears |
-| Act on a selection | Drag any selected tab to move them all (pin, file into a folder, reorder, Essentials, another space), or right-click one for **Pin**, **Move to folder…**, **New folder with tabs**, **Move to space…**, **Split** and **Close** |
+| Act on a selection | Drag any selected tab to move them all (pin, file into a folder, reorder, essentials, another space), or right-click one for **Pin**, **Move to folder…**, **New folder with tabs**, **Move to space…**, **Split** and **Close** |
 
 Dragging a tab into a note inserts a link to it, the same as dragging from the file explorer.
 
 ### Commands
 
-Show tabs sidebar · Pin or unpin current tab · Add or remove current tab from Essentials · Move current tab to folder… · New tab folder · New tab · Open in split view… · Unsplit current split view · Switch to next / previous space · Switch to space 1–9 · New space · Rename current space · Change current space's icon · Move current tab to space… · Close all unpinned tabs · Go to next / previous tab in sidebar order
+Show tabs sidebar · Pin or unpin current tab · Add or remove current tab from essentials · Move current tab to folder… · New tab folder · New tab · Open in split view… · Unsplit current split view · Switch to next / previous space · Switch to space 1–9 · New space · Rename current space · Change current space's icon · Move current tab to space… · Close all unpinned tabs · Go to next / previous tab in sidebar order
 
 ## Less clutter
 

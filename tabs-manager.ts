@@ -6,6 +6,7 @@ import {
   TAbstractFile,
   TFile,
   TFolder,
+  View,
   WorkspaceLeaf,
   WorkspaceSplit,
   debounce,
@@ -1193,7 +1194,7 @@ export class TabsManager extends Events {
   /** Move tabs into the home pane, keeping the focused one focused. */
   private moveHome(leaves: WorkspaceLeaf[], panes = this.memberPanes()) {
     const ws = this.app.workspace;
-    const focused = ws.activeLeaf;
+    const focused = ws.getActiveViewOfType(View)?.leaf ?? null;
     let home = homeGroup(this.app, new Set(panes.keys()));
     for (const leaf of leaves) {
       if (!home) {
@@ -1389,7 +1390,7 @@ export class TabsManager extends Events {
 
   private activeLeaf(leaves: Map<string, WorkspaceLeaf>): WorkspaceLeaf | null {
     const ws = this.app.workspace;
-    const active = ws.activeLeaf;
+    const active = ws.getActiveViewOfType(View)?.leaf ?? null;
     if (active && this.isMainLeaf(active)) return active;
     // Focus is in a sidebar (often this one): keep highlighting the last tab the user worked in.
     if (this.lastMain && leaves.has(leafId(this.lastMain))) return this.lastMain;
@@ -1515,7 +1516,7 @@ function sanitizeLocal(raw: unknown): LocalBindings {
   }
   const opened: Record<string, number> = {};
   if (typeof value.opened === "object" && value.opened) {
-    for (const [pin, time] of Object.entries(value.opened)) if (Number.isFinite(time)) opened[pin] = time as number;
+    for (const [pin, time] of Object.entries(value.opened)) if (Number.isFinite(time)) opened[pin] = time;
   }
   const record = (v: unknown): Record<string, string> =>
     Object.fromEntries(

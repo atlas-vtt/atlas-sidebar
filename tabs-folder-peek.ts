@@ -90,7 +90,7 @@ export class FolderPeek {
     });
     this.close(false);
     const doc = row.doc;
-    this.returnFocus = doc.activeElement instanceof doc.defaultView!.HTMLElement ? (doc.activeElement as HTMLElement) : null;
+    this.returnFocus = doc.activeElement instanceof doc.defaultView!.HTMLElement ? doc.activeElement : null;
     this.anchor = row;
     this.folderId = folderId;
     row.addClass("is-peeking");

@@ -1,7 +1,7 @@
 import { App, Menu, WorkspaceLeaf, setIcon } from "obsidian";
 import { srLabel } from "./a11y";
 import { Parent, rootSplitEl } from "./split-layout";
-import { DragSource, SplitLayoutInfo, SplitSide, TabsManager, leafId } from "./tabs-manager";
+import { SplitLayoutInfo, SplitSide, TabsManager, leafId } from "./tabs-manager";
 
 /** No split is offered this close to the main area's border (Zen's guard). */
 const EDGE_GUARD_PX = 10;
@@ -173,7 +173,7 @@ export class SplitChrome {
     e.stopPropagation();
     // The new pane takes the placeholder's place in the same frame, so nothing jumps.
     this.clearPreview(false);
-    await this.tabs.dropIntoSplit(src as DragSource, side);
+    await this.tabs.dropIntoSplit(src, side);
   }
 
   onDragEnd() {

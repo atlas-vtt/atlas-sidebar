@@ -134,7 +134,11 @@ export class Launcher extends SuggestModal<Item> {
     el.createDiv({ cls: "zen-launcher-action", text: action });
   }
 
-  async onChooseSuggestion(item: Item, evt: MouseEvent | KeyboardEvent) {
+  onChooseSuggestion(item: Item, evt: MouseEvent | KeyboardEvent): void {
+    void this.choose(item, evt);
+  }
+
+  private async choose(item: Item, evt: MouseEvent | KeyboardEvent): Promise<void> {
     const split = this.mode === "split" || evt.shiftKey;
     try {
       if (item.kind === "command") executeCommand(this.app, item.command.id);
