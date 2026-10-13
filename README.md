@@ -85,9 +85,9 @@ Show tabs sidebar · Pin or unpin current tab · Add or remove current tab from 
 
 ## Install
 
-**BRAT:** Add `ByteMirror/obsidian-zen`.
+**BRAT:** Add `atlas-vtt/atlas-sidebar`.
 
-**Manual:** Download `main.js`, `manifest.json` and `styles.css` from the latest [release](https://github.com/ByteMirror/obsidian-zen/releases/latest) into `<vault>/.obsidian/plugins/atlas-sidebar/`.
+**Manual:** Download `main.js`, `manifest.json` and `styles.css` from the latest [release](https://github.com/atlas-vtt/atlas-sidebar/releases/latest) into `<vault>/.obsidian/plugins/atlas-sidebar/`.
 
 Atlas Sidebar uses its own plugin id, so it can't collide with Zen UI. Don't enable both at once: they style the same parts of the window.
 
